@@ -44,7 +44,18 @@ function App() {
   const [toDos, setToDos] = useRecoilState(toDoState);
   // Drag가 완료됐을 때 실행되는 함수
   // type(DropResult)찾는 방법 : onDragEnd생김새 보기 (ctrl+좌클릭)
-  const onDragEnd = ({ destination, source }: DropResult) => {};
+  const onDragEnd = ({ draggableId, destination, source }: DropResult) => {
+    if (!destination) return;
+
+    setToDos((oldToDos) => {
+      const toDosCopy = [...oldToDos];
+      // 1) Delete item on source.index
+      toDosCopy.splice(source.index, 1);
+      // 2) Put back the item on the destination.index
+      toDosCopy.splice(destination?.index, 0, draggableId);
+      return toDosCopy;
+    });
+  };
   return (
     <DragDropContext onDragEnd={onDragEnd}>
       <Wrapper>
@@ -53,7 +64,8 @@ function App() {
             {(provided) => (
               <Board ref={provided.innerRef} {...provided.droppableProps}>
                 {toDos.map((toDo, index) => (
-                  <Draggable key={index} draggableId={toDo} index={index}>
+                  // Draggable에서 key 와 draggbleId 값은 무조건 같아야 한다.
+                  <Draggable key={toDo} draggableId={toDo} index={index}>
                     {(provided) => (
                       <Card
                         ref={provided.innerRef}
