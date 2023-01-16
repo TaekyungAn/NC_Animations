@@ -8,6 +8,13 @@ const Wrapper = styled.div`
   border-radius: 5px;
 `;
 
+const Title = styled.h2`
+  text-align: center;
+  font-weight: 600;
+  margin-bottom: 10px;
+  font-size: 18px;
+`;
+
 interface IBoardProps {
   toDos: string[];
   boardId: string;
@@ -18,6 +25,7 @@ function Board({ toDos, boardId }: IBoardProps) {
     <Droppable droppableId={boardId}>
       {(provided) => (
         <Wrapper ref={provided.innerRef} {...provided.droppableProps}>
+          <Title>{boardId}</Title>
           {toDos.map((toDo, index) => (
             // Draggable에서 key 와 draggbleId 값은 무조건 같아야 한다.
             <DraggableCard key={toDo} toDo={toDo} index={index} />
