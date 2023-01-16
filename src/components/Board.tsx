@@ -6,6 +6,9 @@ const Wrapper = styled.div`
   padding-top: 30px;
   background-color: ${(props) => props.theme.boardColor};
   border-radius: 5px;
+  min-height: 300px;
+  display: flex;
+  flex-direction: column;
 `;
 
 const Title = styled.h2`
@@ -15,6 +18,18 @@ const Title = styled.h2`
   font-size: 18px;
 `;
 
+interface IAreaProps {
+  isDraggingFromThis: boolean;
+  isDraggingOver: boolean;
+}
+
+const Area = styled.div<IAreaProps>`
+  background-color: ${(props) =>
+    props.isDraggingOver ? "pink" : props.isDraggingFromThis ? "red" : "blue"};
+  flex-grow: 1;
+  transition: background-color 0.3s ease-in-out;
+`;
+
 interface IBoardProps {
   toDos: string[];
   boardId: string;
@@ -22,18 +37,24 @@ interface IBoardProps {
 
 function Board({ toDos, boardId }: IBoardProps) {
   return (
-    <Droppable droppableId={boardId}>
-      {(provided) => (
-        <Wrapper ref={provided.innerRef} {...provided.droppableProps}>
-          <Title>{boardId}</Title>
-          {toDos.map((toDo, index) => (
-            // Draggable에서 key 와 draggbleId 값은 무조건 같아야 한다.
-            <DraggableCard key={toDo} toDo={toDo} index={index} />
-          ))}
-          {provided.placeholder}
-        </Wrapper>
-      )}
-    </Droppable>
+    <Wrapper>
+      <Title>{boardId}</Title>
+      <Droppable droppableId={boardId}>
+        {(magic, info) => (
+          <Area
+            isDraggingOver={info.isDraggingOver}
+            isDraggingFromThis={Boolean(info.draggingFromThisWith)}
+            ref={magic.innerRef}
+            {...magic.droppableProps}
+          >
+            {toDos.map((toDo, index) => (
+              <DraggableCard key={toDo} index={index} toDo={toDo} />
+            ))}
+            {magic.placeholder}
+          </Area>
+        )}
+      </Droppable>
+    </Wrapper>
   );
 }
 export default Board;
