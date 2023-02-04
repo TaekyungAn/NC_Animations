@@ -3,17 +3,19 @@ import {
   motion,
   useMotionValue,
   useMotionValueEvent,
+  useScroll,
   useTransform,
   Variants,
 } from "framer-motion";
 import { useEffect, useRef } from "react";
 
-const Wrapper = styled.div`
-  height: 100vh;
+const Wrapper = styled(motion.div)`
+  height: 200vh;
   width: 100vw;
   display: flex;
   justify-content: center;
   align-items: center;
+  background-color: linear-gradient(135deg, rgb(238, 0, 153), rgb(221, 0, 238));
 `;
 
 const BiggerBox = styled(motion.div)`
@@ -44,14 +46,26 @@ const boxVariants: Variants = {
 
 function App() {
   const x = useMotionValue(0);
-  const potato = useTransform(x, [-800, 0, 800], [2, 1, 0.1]);
-
-  useMotionValueEvent(potato, "change", (I) => {
-    console.log(I);
+  const rotateZ = useTransform(x, [-800, 800], [-360, 360]);
+  const gradient = useTransform(
+    x,
+    [-800, 0, 800],
+    [
+      "linear-gradient(135deg, rgb(0, 186, 238),#006fee",
+      "linear-gradient(135deg, rgb(238,0,153),rgb(221,0,238)",
+      "linear-gradient(135deg, rgb(198, 238, 0),rgb(238, 135, 0)",
+    ]
+  );
+  const { scrollYProgress } = useScroll();
+  // useEffect => useMotionValueEvent
+  const scale = useTransform(scrollYProgress, [0, 1], [1, 5]);
+  useMotionValueEvent(scrollYProgress, "change", (latest) => {
+    console.log("scrollYProgress : ", latest);
   });
+
   return (
-    <Wrapper>
-      <Box style={{ x, scale: potato }} drag="x" dragSnapToOrigin />
+    <Wrapper style={{ background: gradient }}>
+      <Box style={{ x, rotateZ, scale }} drag="x" dragSnapToOrigin />
     </Wrapper>
   );
 }
