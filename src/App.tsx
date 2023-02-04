@@ -3,6 +3,7 @@ import {
   motion,
   useMotionValue,
   useMotionValueEvent,
+  useTransform,
   Variants,
 } from "framer-motion";
 import { useEffect, useRef } from "react";
@@ -43,18 +44,14 @@ const boxVariants: Variants = {
 
 function App() {
   const x = useMotionValue(0);
-  // 강의에 사용된 이전 방식
-  // useEffect(() => {
-  //   x.onChange(() => console.log(x.get()));
-  // }, [x]);
+  const potato = useTransform(x, [-800, 0, 800], [2, 1, 0.1]);
 
-  useMotionValueEvent(x, "change", (I) => {
+  useMotionValueEvent(potato, "change", (I) => {
     console.log(I);
   });
   return (
     <Wrapper>
-      <button onClick={() => x.set(200)}>click me</button>
-      <Box style={{ x }} drag="x" dragSnapToOrigin />
+      <Box style={{ x, scale: potato }} drag="x" dragSnapToOrigin />
     </Wrapper>
   );
 }
