@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import { motion, AnimatePresence, Variants } from "framer-motion";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const Wrapper = styled(motion.div)`
   height: 100vh;
@@ -49,23 +49,30 @@ const box: Variants = {
   }),
 };
 
+// 니꼬쌤꺼에서 버그 있어서 댓글에 있던 아래 주소 참고함
+// https://github.com/jijiseong/react_animation/blob/8e624ce9f5680b2cfc03bb92c014fc9e2fe929a4/src/components/Slider.tsx
 function App() {
   const [visible, setVisible] = useState(1);
-  const [back, setBack] = useState(false);
+  const [back, setBack] = useState({ value: false });
 
   const nextPlease = () => {
-    setBack(false);
-    setVisible((prev) => (prev === 10 ? 10 : prev + 1));
+    setBack({ value: false });
   };
   const prevPlease = () => {
-    setBack(true);
-    setVisible((prev) => (prev === 1 ? 1 : prev - 1));
+    setBack({ value: true });
   };
+  useEffect(() => {
+    if (back.value) {
+      setVisible((cur) => (cur !== 1 ? cur - 1 : cur));
+    } else {
+      setVisible((cur) => (cur !== 10 ? cur + 1 : cur));
+    }
+  }, [back]);
   return (
     <Wrapper>
-      <AnimatePresence custom={back} mode="wait">
+      <AnimatePresence custom={back.value} mode="wait">
         <Box
-          custom={back}
+          custom={back.value}
           variants={box}
           initial="entry"
           animate="center"
